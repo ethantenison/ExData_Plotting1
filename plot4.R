@@ -1,0 +1,23 @@
+#plot 4 
+library(dplyr)
+library(janitor)
+library(lubridate)
+data = read.csv("household_power_consumption.txt", header = TRUE, sep = ";", na.strings = "?")
+data <- clean_names(data)
+
+data$date <- as.character(data$date)
+data$time <- as.character(data$time)
+data <- filter(data, date == "1/2/2007" | date == "2/2/2007")
+data$datetime <- paste(data$date, data$time, sep = " ")
+data$datetime <- dmy_hms(data$datetime)
+
+png("plot4.png", width = 480, height = 480)
+par(mfcol=c(2,2))
+plot(data$datetime, data$global_active_power, type = "l", xlab = "", ylab = "Global Active Power (Kilowatts)", col= "limegreen")
+plot(data$datetime, data$sub_metering_1, type = "l", xlab = "", ylab = "Energy Sub Metering")
+lines(data$datetime, data$sub_metering_2, col = "blue")
+lines(data$datetime, data$sub_metering_3, col = "magenta")
+legend("topright", legend = c("Sub Meter 1", "Sub Meter 2", "Sub Meter 3"), col = c("black", "blue", "magenta"), lty = 1)
+plot(data$datetime, data$voltage, type = "l", xlab = "datetime", ylab = "voltage")
+plot(data$datetime, data$global_reactive_power, type = "l", xlab = "datetime", ylab = "Global Reactive Power")
+dev.off()
